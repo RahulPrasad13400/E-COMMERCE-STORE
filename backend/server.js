@@ -4,6 +4,7 @@ import dotenv from "dotenv" // To read the values from .env
 import cookieParser from "cookie-parser"
 
 import authRoutes from "./routes/auth.route.js"
+import productRoutes from "./routes/product.route.js"
 import { conntectDB } from "./lib/db.js"
 
 dotenv.config() // To read the values from .env
@@ -13,7 +14,8 @@ app.use(cookieParser())
 
 const PORT = process.env.PORT || 5000 
 
-app.use('/api/v1/auth', authRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/products', productRoutes)
 
 app.listen(PORT,()=>{
     console.log(`server started running on the ${PORT}`)
