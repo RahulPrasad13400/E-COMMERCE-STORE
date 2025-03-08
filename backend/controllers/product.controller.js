@@ -79,3 +79,117 @@ export const createProduct = async (req, res) =>{
         })          
     }
 }
+
+export const deleteProduct = async () =>{
+    try {
+        const product = await Product.findById(req.params.id)
+        if(!product){
+            return res.status().json({
+                success : false,
+                message : "Product not found!"
+            })
+        }
+
+        // deleting the image from the cloudinary
+        if(product.image){
+            // this will get the id of the image 
+            const publicId = product.image.split('/').pop().split('.')[0]
+            try {
+                await cloudinary.uploader.destroy(`products/${publicId}`)
+                console.log("Deleted image from cloudinary!")
+            } catch (error) {
+                console.log("Error deleting image from cloudinary", error.message)
+            }
+        }
+        
+        await Product.findByIdAndDelete(req.params.id)
+
+        res.status(200).json({
+            success : true,
+            message : "Product deleted successfully!"
+        })
+        
+    } catch (error) {
+        console.log("Error occured in the deleteProduct controller : ",error.message)
+        res.status(500).json({
+            message : "server error",
+            error : error.message
+        })    
+    }
+}
+
+export const getRecommendedProducts = async (req, res) =>{
+    try {
+        const products = await Product.aggregate([
+            {
+                $sample : {size : 3} // number of products 
+            },
+            {
+                $project : {    // it should return those fields 
+                    id : 1,
+                    name : 1,
+                    description : 1,
+                    image: 1,
+                    price : 1
+                }
+            }
+        ])
+
+        res.json(products)
+
+    } catch (error) {
+        console.log("Error occured in the getRecommendedProducts controller : ",error.message)
+        res.status(500).json({
+            message : "server error",
+            error : error.message
+        })       
+    }
+}
+
+export const getProductsByCategory = async (req, res) =>{
+    const {category} = req.params
+    try {
+        const products = await Product.find({category})
+        res.json(products)
+    } catch (error) {
+        console.log("Error occured in the getCategoryProducts controller : ",error.message)
+        res.status(500).json({
+            message : "server error",
+            error : error.message
+        })   
+    }
+}
+
+export const toggleFeaturedProduct = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params)
+        if(!product){
+            product.isFeatured = !product.isFeatured
+            const updatedProduct = await product.save()
+
+            // update cache (redis)
+            await updateFeaturedProductsCache()
+            res.json(updatedProduct)
+        }else{ 
+            res.status(404).json({
+                message : "Product not found!"
+            })
+        }
+
+    } catch (error) {
+        console.log("Error occured in the toggleFeaturedProduct controller : ",error.message)
+        res.status(500).json({
+            message : "server error",
+            error : error.message
+        })          
+    }
+}
+
+async function updateFeaturedProductsCache(){
+    try {
+        const featuredProducts = await Product.find({isFeatured : true}).lean()
+        await redis.set("featured_products", JSON.stringify(featuredProducts))
+    } catch (error) {
+        console.log("Error in updateFeaturedProductsCache function")
+    }
+}
