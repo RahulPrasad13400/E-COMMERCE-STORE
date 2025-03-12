@@ -36,7 +36,7 @@ const setCookies = (res, accessToken, refreshToken) =>{
 
 export const signup = async (req, res) => {
     const {email, name, password} = req.body 
-    try{
+    try{ 
         // checking whether the email already exist 
         const userExists = await User.findOne({email})
         if(userExists){
