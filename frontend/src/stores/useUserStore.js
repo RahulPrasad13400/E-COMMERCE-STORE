@@ -1,5 +1,5 @@
 import {create} from 'zustand'
-import axios from 'axios'
+import axios from '../lib/axios'
 import toast from "react-hot-toast"
 
 export const useAuthStore = create((set)=>({
@@ -12,7 +12,8 @@ export const useAuthStore = create((set)=>({
             toast.error("Password do not match!")
         }
         try{
-            const res = await axios.post("/api/auth/signup", {name, email, password})
+            const res = await axios.post("/auth/signup", {name, email, password})
+            console.log("signup : ", res.data)
             set({user : res.data, loading : false})
             toast.success("Account created successfully")
         }catch(error){
@@ -24,7 +25,7 @@ export const useAuthStore = create((set)=>({
     login : async ({email, password}) =>{
         set({loading : true})
         try{
-            const res = await axios.post("/api/auth/login", {email, password})
+            const res = await axios.post("/auth/login", {email, password})
             set({user : res.data, loading : false})
             toast.success("Logged in Successfully")
         }catch(error){
@@ -34,9 +35,9 @@ export const useAuthStore = create((set)=>({
         }
     },
     checkAuth : async () =>{
-        set({checkingAuth : true})
+        set({checkingAuth : true}) 
         try {
-            const response = await axios.get('/api/auth/profile')
+            const response = await axios.get('/auth/profile')
             set({user : response.data, checkingAuth : false})
         } catch (error) {
             set({checkingAuth : false, user : null})
@@ -45,12 +46,12 @@ export const useAuthStore = create((set)=>({
     },
     logout : async () =>{
         try{
-            await axios.post('/api/auth/logout')
+            await axios.post('/auth/logout')
             set({user : null})
             toast.success("logout successfull")
         }catch(error){
             toast.error("logout failed")
             console.log(error.message)
         } 
-    } 
+    }  
 }))

@@ -16,8 +16,13 @@ import { conntectDB } from "./lib/db.js"
 
 dotenv.config() // To read the values from .env
 const app = express()
-app.use(express.json()) // req.body il ulla values read cheyyan 
+app.use(express.json({ limit: "10mb" })) // req.body il ulla values read cheyyan 
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser())
+
+// Increase payload size limit to 10MB (or any size you need)
+// app.use(express.json({ limit: "10mb" })); // For JSON payloads
+// app.use(express.urlencoded({ limit: "10mb", extended: true })); // For URL-encoded payloads
 
 // app.use(cors({
 //     origin: 'http://localhost:5173',

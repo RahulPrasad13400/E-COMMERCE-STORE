@@ -1,13 +1,13 @@
-import cloudinary from "../lib/cloudinary.js"
+import cloudinary from "./../lib/cloudinary.js"
 import { redis } from "../lib/redis.js"
 import Product from "../models/product.model.js"
 
 export const getAllProducts = async (req, res) =>{
-    try{
+    try{ 
         const products = await Product.find() 
         res.status(200).json({
             success : false,
-            products
+            products 
         })
     }catch(error){
         console.log("Error occured in the getAllProducts controller : ",error.message)
@@ -54,12 +54,13 @@ export const getFeaturedProducts = async (req, res) => {
 export const createProduct = async (req, res) =>{
     try {
         const {name, description, image, price, category} = req.body
-
+        
         // saving image to cloudinary 
         let cloudinaryResponse = null;
         if(image){
             cloudinaryResponse = await cloudinary.uploader.upload(image, {folder : "products"})
         }
+
 
         const product = await Product.create({
             name,
