@@ -6,7 +6,7 @@ export const getAllProducts = async (req, res) =>{
     try{ 
         const products = await Product.find() 
         res.status(200).json({
-            success : false,
+            success : true,
             products 
         })
     }catch(error){
@@ -81,7 +81,7 @@ export const createProduct = async (req, res) =>{
     }
 }
 
-export const deleteProduct = async () =>{
+export const deleteProduct = async (req, res) =>{
     try {
         const product = await Product.findById(req.params.id)
         if(!product){
@@ -163,14 +163,17 @@ export const getProductsByCategory = async (req, res) =>{
 
 export const toggleFeaturedProduct = async (req, res) => {
     try {
-        const product = await Product.findById(req.params)
-        if(!product){
+        const product = await Product.findById(req.params.id)
+        if(product){
             product.isFeatured = !product.isFeatured
             const updatedProduct = await product.save()
 
             // update cache (redis)
             await updateFeaturedProductsCache()
-            res.json(updatedProduct)
+            res.status(200).json({
+                status : true,
+                updatedProduct
+            })
         }else{ 
             res.status(404).json({
                 message : "Product not found!"
