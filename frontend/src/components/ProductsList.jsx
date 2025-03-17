@@ -3,7 +3,7 @@ import { Trash, Star } from "lucide-react";
 import { useProductStore } from "../stores/useProductStore";
 
 const ProductsList = () => {
-	const { deleteProduct, toggleFeaturedProduct, products } = useProductStore();
+	const { deleteProduct, toggleFeaturedProduct, products, loading } = useProductStore();
 
 	return (
 		<motion.div
@@ -83,12 +83,12 @@ const ProductsList = () => {
 								</button>
 							</td>
 							<td className='px-6 py-4 whitespace-nowrap text-sm font-medium'>
-								<button
+{						!loading	&&	<button
 									onClick={() => deleteProduct(product._id)}
 									className='text-red-400 hover:text-red-300'
 								>
 									<Trash className='h-5 w-5' />
-								</button>
+								</button>}
 							</td>
 						</tr>
 					))}

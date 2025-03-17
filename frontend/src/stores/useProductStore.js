@@ -32,12 +32,23 @@ export const useProductStore = create((set)=>({
             console.log(error)
         }
     },
+    fetchProductsByCategory : async (category) => {
+        set({loading : true})
+        try {
+            const response = await axios.get(`products/category/${category}`)
+            set({products : response.data.products, loading : false})
+        } catch (error) {
+            set({loading : false})
+            toast.error( error.response.data.error || "An error occured in the fetchProductsByCategory")
+            console.log(error)            
+        }
+    },
     deleteProduct : async (productId) => {
         set({loading : true})
         try {
             await axios.delete(`/products/${productId}`)
             set((prevProducts)=>({
-                products : prevProducts.products.map((product)=> product._id !== productId),
+                products : prevProducts.products.filter((product)=> product._id !== productId),
                 loading : false
             }))
         } catch (error) {
