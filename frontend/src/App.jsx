@@ -21,8 +21,9 @@ function App() {
   },[checkAuth])
 
   useEffect(function(){
+    if(!user) return
     getCartItems()
-  },[getCartItems])
+  },[getCartItems, user])
 
   if(checkingAuth){
     return <LoadingSpinner />
@@ -43,7 +44,7 @@ function App() {
                 <Route element={user ? <Navigate to={'/'} /> : <LoginPage />} path="/login"  />
                 <Route element={user?.role === "admin" ? <AdminPage /> : <Navigate to={'/login'} />} path="/secret-dashboard" />
                 <Route element={<CategoryPage />} path="/category/:category" />
-                <Route path="/cart" element={user ? <CartPage /> : <Navigate to={'login'} />} />
+                <Route path="/cart" element={user ? <CartPage /> : <Navigate to={'/login'} />} />
             </Routes>   
         </div>
         <Toaster />
