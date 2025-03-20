@@ -24,7 +24,8 @@ export const createCheckoutSession = async (req, res) =>{
                         images : [product.image],
                     },
                     unit_amount:amount
-                }
+                },
+                quantity : product.quantity || 1
             }
         })
 
