@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCartStore } from '../stores/useCartStore'
 import axios from '../lib/axios'
+import Confetti from "react-confetti"
 
 export default function PurchaseSuccessPage() {
     const [isProcessing, setIsProcessing] = useState(true)
@@ -39,6 +40,18 @@ export default function PurchaseSuccessPage() {
 
   return (
     <div className='min-h-screen flex items-center justify-center px-4'>
+    <Confetti 
+        window = {
+            window.innerWidth
+        }
+        height={
+            window.innerHeight
+        }
+        gravity={0.1}
+        style={{zIndex:99}}
+        numberOfPieces={700}
+        recycle={false}
+    />
     <div className='max-w-md w-full bg-gray-800 rounded-lg shadow-xl overflow-hidden relative z-10'>
 		<div className='p-6 sm:p-8'>
 			<div className='flex justify-center'>

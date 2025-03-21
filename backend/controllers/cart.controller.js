@@ -12,7 +12,7 @@ export const getCartProducts = async (req, res) =>{
 			// Return the product with its details and quantity
 			return { ...product.toJSON(), quantity: item.quantity };
 		});
-
+   
         res.status(200).json(cartItems)
         
     } catch (error) {

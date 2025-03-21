@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "../lib/axios";
 import toast from "react-hot-toast"
+import { isCancel } from "axios";
 
 export const useCartStore = create((set, get)=>({
     cart : [],
@@ -10,6 +11,29 @@ export const useCartStore = create((set, get)=>({
     subTotal : 0,
     isCouponApplied : false,
 
+    getMyCoupon : async () => {
+        try {
+            const response = await axios.get('/coupons')
+            set({coupon : response.data})
+        } catch (error) {
+           console.log("Error fetching the coupon", error) 
+        }
+    },
+    applyCoupon : async (code) => {
+        try {
+            const response = await axios.post("/coupons/validate", {code})
+            set({coupon : response.data, isCouponApplied : true})
+            get().calculateTotals()
+            toast.success("coupon applied")
+        } catch (error) {
+            toast.error(error?.response?.data?.message || "Failed to apply coupon")
+        }
+    },
+    removeCoupon : async () => {
+        set({coupon : null, isCouponApplied : false})
+        get().calculateTotals()
+        toast.success("coupon removed!")
+    },
     getCartItems : async () => {
         try {
             const response = await axios.get(`/cart`)
@@ -19,6 +43,9 @@ export const useCartStore = create((set, get)=>({
             set({cart : []})
             toast.error(error.response.data.message || "An Error Occured in the getCartItems!")
         }
+    },
+    clearCart : async () => {
+        set({cart : [], coupon : null, total : 0, subTotal : 0})
     },
     addToCart : async (product) => {
         try {

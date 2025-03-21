@@ -36,7 +36,7 @@ export const createCheckoutSession = async (req, res) =>{
                 totalAmout -= Math.round(totalAmout * coupon.discountPercentage /100)
             }
         }
-
+        
         const session = await stripe.checkout.sessions.create({
             payment_method_types : ["card"],
             line_items : lineItems,
@@ -55,12 +55,12 @@ export const createCheckoutSession = async (req, res) =>{
                     return {
                         id : p._id,
                         quantity : p.quantity,
-                        price : p.price
+                        price : p.price 
                     }
                 }))
             }
         })
-
+        
         // creating a new coupon for purchase above the price 
         if(totalAmout > 20000){
             await createNewCoupon(req.user._id)
@@ -89,11 +89,17 @@ async function createStripeCoupon(discountPercentage){
     return coupon.id
 }       
 
-async function createNewCoupon(userId){
+async function createNewCoupon(userId){ 
+
+    // console.log(userId)
+
+    // To delete the previous coupon
+    await Coupon.findOneAndDelete({ userId: userId });
+    
     const newCoupon = new Coupon({
         code : "GIFT" + Math.random().toString().substring(2, 8).toUpperCase(),
         discountPercentage : 10,
-        expirationDate : new Date(new Date() + 30*24*60*60*1000), // 30 days from now 
+        expirationDate : new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000), // 30 days from now 
         userId : userId
     })
     await newCoupon.save()

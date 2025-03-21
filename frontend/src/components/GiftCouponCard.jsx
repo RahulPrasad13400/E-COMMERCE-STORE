@@ -1,17 +1,27 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useCartStore } from '../stores/useCartStore'
 
 export default function GiftCouponCard() {
     const [userInputCode, setUserInputCode] = useState('')
-    const { coupon, isCouponApplied } = useCartStore()
+    const { coupon, isCouponApplied, getMyCoupon, applyCoupon, removeCoupon } = useCartStore()
+
+    useEffect(function(){
+      getMyCoupon()
+    },[getMyCoupon])
+
+    useEffect(function(){
+      if(coupon) setUserInputCode(coupon.code)
+    },[coupon])
 
     const handleApplyCoupon = () =>{
-
+      if(!userInputCode) return 
+      applyCoupon(userInputCode)
     }
 
-    const handleRemoveCoupon = () => {
-
+    const handleRemoveCoupon = async () => {
+      await removeCoupon()
+      setUserInputCode("")
     }
     
     return (
