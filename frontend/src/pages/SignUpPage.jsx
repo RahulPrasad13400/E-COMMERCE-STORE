@@ -7,10 +7,10 @@ import {useAuthStore} from '../stores/useUserStore'
 export default function SignUpPage() {
   // const loading = false 
   const [formData, setFormData] = useState({
-    name : 'jon',
-    email : 'jon@gmail.com',   
-    password : '123456',
-    confirmPassword : '123456'
+    name : '',
+    email : '',   
+    password : '',
+    confirmPassword : ''
   })
 
   const {signup, user, loading} = useAuthStore()
